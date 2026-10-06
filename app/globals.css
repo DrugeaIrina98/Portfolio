@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-fraunces: "Fraunces", Georgia, serif;
+  --font-sofia: "Sofia Sans", system-ui, sans-serif;
+  --font-space-mono: "Space Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #fbf6f2;
+    color: #3a2e42;
+    font-family: var(--font-sofia);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Fraunces reads best a touch softer at display sizes */
+  .font-display {
+    font-optical-sizing: auto;
+    font-variation-settings: "SOFT" 60, "WONK" 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Visible, on-brand keyboard focus for every interactive element.
+     :focus-visible only, so mouse users don't see rings. */
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #f4a896;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer utilities {
+  /* Tiny uppercase mono labels — dates, case-study numbers, tags */
+  .label-mono {
+    font-family: var(--font-space-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+}
+
+/* ── Signature background blob ─────────────────────────────────────
+   Slow morph of the corner radii + a gentle drift. Kept very low
+   contrast so it never competes with content. Scroll response is
+   layered on top via a CSS variable set in JS (--blob-shift). */
+@keyframes blob-morph {
+  0% {
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    transform: translate3d(var(--blob-shift, 0), 0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    border-radius: 62% 38% 41% 59% / 56% 63% 37% 44%;
+    transform: translate3d(var(--blob-shift, 0), -1.5%, 0) rotate(4deg) scale(1.04);
+  }
+  66% {
+    border-radius: 38% 62% 58% 42% / 63% 38% 62% 37%;
+    transform: translate3d(var(--blob-shift, 0), 1.5%, 0) rotate(-3deg) scale(0.98);
+  }
+  100% {
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    transform: translate3d(var(--blob-shift, 0), 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+.blob-drift {
+  animation: blob-morph 26s ease-in-out infinite;
+  will-change: transform, border-radius;
+  transition: transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Honour reduced-motion: freeze the blob, drop reveal transitions. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .blob-drift {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
